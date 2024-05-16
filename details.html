@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .navbar {
+            background-color: #007bff;
+            color: white;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        img {
+            max-width: 150px;
+            height: auto;
+            float: left;
+            margin-right: 20px;
+        }
+        .details {
+            margin-top: 20px;
+        }
+        .details h5 {
+            margin-bottom: 0;
+        }
+        .details p {
+            margin-top: 0;
+        }
+        .ability-list, .move-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .ability-list li, .move-list li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    		    <!-- Navbar -->
+                <nav class="navbar navbar-expand-lg navbar-dark">
+                    <div class="container">
+                        <a class="navbar-brand" href="#">PokeAPI Integration</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.html">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="types.html">Pokémon Types</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="generation.html">Pokémon Generations</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="team-builder.html">Team Builder</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Pokémon Details</h1>
+        <div class="card">
+            <div class="card-body">
+                <img id="pokemon-image" alt="Pokémon Image">
+                <div class="details" id="pokemon-details">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        // Custom JavaScript
+        const urlParams = new URLSearchParams(window.location.search);
+        const pokemonId = urlParams.get('id');
+        const pokemonDetailsElement = document.getElementById('pokemon-details');
+        const pokemonImageElement = document.getElementById('pokemon-image');
+
+        fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
+            .then(response => response.json())
+            .then(data => {
+                pokemonImageElement.src = data.sprites.front_default;
+                pokemonImageElement.alt = data.name;
+
+                const abilities = data.abilities.map(ability => ability.ability.name);
+                const moves = data.moves.map(move => move.move.name);
+
+                pokemonDetailsElement.innerHTML = `
+                    <h5 class="card-title">${data.name}</h5>
+                    <p class="card-text">Height: ${data.height} | Weight: ${data.weight}</p>
+                    <p class="card-text"><strong>Base Experience:</strong> ${data.base_experience}</p>
+                    <p class="card-text"><strong>Order:</strong> ${data.order}</p>
+                    <p class="card-text"><strong>Abilities:</strong></p>
+                    <ul class="ability-list">
+                        ${abilities.map(ability => `<li>${ability}</li>`).join('')}
+                    </ul>
+                    <p class="card-text"><strong>Moves:</strong></p>
+                    <ul class="move-list">
+                        ${moves.map(move => `<li>${move}</li>`).join('')}
+                    </ul>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                pokemonDetailsElement.innerHTML = '<p>Pokémon details not found. Please try again.</p>';
+            });
+    </script>
+</body>
+</html>

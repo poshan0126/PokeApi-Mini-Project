@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeAPI Integration</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #007bff;
+            color: white;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        p {
+            text-align: center;
+        }
+        .autocomplete-content {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">PokeAPI Integration</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="types.html">Pokémon Types</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="generation.html">Pokémon Generation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="team-builder.html">Team Builder</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="text-center">Welcome to the Pokémon World!</h1>
+        <p class="text-center">Explore Pokémon data and information with our interactive web application.</p>
+        <div class="row justify-content-center">
+            <form id="pokemon-search-form" class="col-md-8 align-items-end">
+                <div class="form-group">
+                    <label for="pokemon-name" class="text-center d-block mb-2">Search for a Pokémon:</label>
+                    <div class="input-group">
+                        <input type="text" id="pokemon-name-input" class="form-control mr-2" placeholder="Enter Pokémon name or ID" autocomplete="off">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="pokemon-card" style="display: none;">
+            <div class="card" style="width: 12rem;">
+                <img id="pokemon-image" class="card-img-top" alt="Pokémon Image">
+                <div class="card-body">
+                    <h5 id="pokemon-name" class="card-title"></h5>
+                    <p class="card-text">Click the button below to view details.</p>
+                    <a id="view-details-btn" href="#" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div id="pokemon-details" class="mt-4"></div>
+        <div class="loader" id="loader" style="display: none;"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Autocomplete for Pokémon names
+            fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')
+                .then(response => response.json())
+                .then(data => {
+                    const pokemonNames = data.results.map(pokemon => pokemon.name);
+                    $('#pokemon-name-input').typeahead({
+                        source: pokemonNames
+                    });
+                })
+                .catch(error => console.error('Error fetching Pokémon names:', error));
+
+            // Handle Pokémon search form submission
+            $('#pokemon-search-form').submit(async function(event) {
+                event.preventDefault();
+                const pokemonNameOrId = $('#pokemon-name-input').val().trim();
+                const loader = $('#loader');
+                loader.show();
+                try {
+                    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonNameOrId}`);
+                    const data = await response.json();
+                    const pokemonCard = $('#pokemon-card');
+                    const pokemonImage = $('#pokemon-image');
+                    const pokemonName = $('#pokemon-name');
+                    const viewDetailsBtn = $('#view-details-btn');
+                    pokemonImage.attr('src', data.sprites.front_default);
+                    pokemonName.text(data.name);
+                    viewDetailsBtn.attr('href', `details.html?id=${data.id}`);
+                    pokemonCard.show();
+                    loader.hide();
+                } catch (error) {
+                    console.error('Error:', error);
+                    $('#pokemon-details').html('<p>Pokémon not found. Please try again.</p>');
+                    loader.hide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

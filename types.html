@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Types</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #007bff;
+            color: white;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .card {
+            width: 18rem;
+            margin-bottom: 20px;
+        }
+        .card img {
+            max-width: 50px;
+            height: auto;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    		    <!-- Navbar -->
+                <nav class="navbar navbar-expand-lg navbar-dark">
+                    <div class="container">
+                        <a class="navbar-brand" href="#">PokeAPI Integration</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.html">Home</a>
+                                </li>
+                                <li class="nav-item types">
+                                    <a class="nav-link" href="types.html">Pokémon Types</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="generation.html">Pokémon Generations</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="team-builder.html">Team Builder</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Pokémon Types</h1>
+        <div id="types" class="row"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        // Custom JavaScript
+        fetch('https://pokeapi.co/api/v2/type')
+            .then(response => response.json())
+            .then(data => {
+                const typesElement = document.getElementById('types');
+                data.results.forEach(type => {
+                    fetch(type.url)
+                        .then(response => response.json())
+                        .then(typeData => {
+                            const pokemons = typeData.pokemon.slice(0, 5); // Limit to first 5 Pokémon for simplicity
+                            let typeCard = `
+                                <div class="card mx-auto">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${type.name.toUpperCase()}</h5>
+                                        <ul class="list-group">`;
+                            pokemons.forEach(pokemon => {
+                                const pokemonName = pokemon.pokemon.name;
+                                const pokemonUrl = pokemon.pokemon.url;
+                                const pokemonId = pokemonUrl.split('/').slice(-2, -1)[0];
+                                const pokemonImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`;
+                                typeCard += `
+                                    <li class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <img src="${pokemonImageUrl}" alt="${pokemonName}">
+                                            <span>${pokemonName}</span>
+                                            <a href="details.html?id=${pokemonId}" class="btn btn-primary">Details</a>
+                                        </div>
+                                    </li>`;
+                            });
+                            typeCard += `
+                                        </ul>
+                                    </div>
+                                </div>
+                            `;
+                            typesElement.innerHTML += typeCard;
+                        })
+                        .catch(error => console.error('Error fetching Pokémon data:', error));
+                });
+            })
+            .catch(error => console.error('Error fetching types:', error));
+    </script>
+</body>
+</html>
