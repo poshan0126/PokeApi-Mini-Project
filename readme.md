@@ -38,7 +38,7 @@ Follow these instructions to set up and run the Pokémon Team Builder on your lo
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/pokemon-team-builder.git
+   git clone (https://github.com/poshan0126/PokeApi-Mini-Project)
 
 2. Navigate to the project directory:
     ```bash
@@ -46,6 +46,12 @@ Follow these instructions to set up and run the Pokémon Team Builder on your lo
 3. Open the index.html file in your preferred web browser:
     ```bash
         open index.html
+
+## Acknowledgements
+- PokeAPI for providing the Pokémon data.
+- Bootstrap for the responsive design framework.
+- Bootstrap Typeahead for the autocomplete plugin.
+- LLMS for format correction and some error solving
 
 
 
